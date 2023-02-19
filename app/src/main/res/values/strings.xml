@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">NewsViewer</string>
+    <string name="unknownEx" translatable="false">Неизвестная ошибка</string>
+    <string name="editTextHint" translatable="false">Поиск</string>
 </resources>
