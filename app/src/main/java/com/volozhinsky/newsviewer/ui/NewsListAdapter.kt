@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.volozhinsky.newsviewer.R
+import com.volozhinsky.newsviewer.databinding.RvItemNewsListBinding
 import com.volozhinsky.newsviewer.ui.models.ArticleUI
 
 class NewsListAdapter(private val onClicFunc: (String) -> Unit) :
@@ -12,9 +13,9 @@ class NewsListAdapter(private val onClicFunc: (String) -> Unit) :
     private var newsListResponse: MutableList<ArticleUI> = mutableListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsListViewHolder {
-        val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.rv_item_news_list, parent, false)
-        return NewsListViewHolder(view, onClicFunc)
+        val layoutInflater = LayoutInflater.from(parent.context)
+        val newsBinding = RvItemNewsListBinding.inflate(layoutInflater,parent,false)
+        return NewsListViewHolder(newsBinding,onClicFunc)
     }
 
     override fun onBindViewHolder(holder: NewsListViewHolder, position: Int) {

@@ -15,8 +15,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NewsListViewModel @Inject constructor(
-    val repository: NewsRepository,
-    val mapper: ArticleUIMapper
+    private val repository: NewsRepository,
+    private val mapper: ArticleUIMapper,
+
 ) : ViewModel() {
 
     private var _newsListLiveData = MutableLiveData<List<ArticleUI>>()
@@ -36,5 +37,9 @@ class NewsListViewModel @Inject constructor(
             _newsListLiveData.value = repository.getNews(keyword).map { mapper(it) }
             _loadingProgressBarLiveData.value = false
         }
+    }
+
+    fun setUserCountry() {
+        repository.setUserCountry("ru")
     }
 }

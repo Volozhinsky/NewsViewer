@@ -6,16 +6,17 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.volozhinsky.newsviewer.R
+import com.volozhinsky.newsviewer.databinding.RvItemNewsListBinding
 import com.volozhinsky.newsviewer.ui.models.ArticleUI
 
-class NewsListViewHolder(itemView: View, private val onClicFunc: (String) -> Unit) :
-    RecyclerView.ViewHolder(itemView) {
+class NewsListViewHolder(private val itemBinding: RvItemNewsListBinding, private val onClicFunc: (String) -> Unit) :
+    RecyclerView.ViewHolder(itemBinding.root) {
     fun bind(item: ArticleUI) {
-        val name = itemView.findViewById<TextView>(R.id.textViewTitle)
-        val poster = itemView.findViewById<ImageView>(R.id.imageViewArticle)
+        val name = itemBinding.textViewTitle
+        val poster = itemBinding.imageViewArticle
         name.text = item.title
         loadPoster(item.urlToImage, poster)
-        itemView.setOnClickListener {
+        itemBinding.root.setOnClickListener {
             onClicFunc.invoke(item.url)
         }
     }

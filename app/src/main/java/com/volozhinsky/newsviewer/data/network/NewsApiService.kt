@@ -11,5 +11,5 @@ interface NewsApiService {
     fun getNewsList(@Query("q") keyword: String): Call<Response>
 
     @GET("top-headlines")
-    fun getAllNewsList(@Query("category") category: String): Call<Response>
+    fun getAllNewsList(@Query("country") country: String = "uk"): Call<Response>
 }
