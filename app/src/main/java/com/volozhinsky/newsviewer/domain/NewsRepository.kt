@@ -7,4 +7,5 @@ interface NewsRepository {
     suspend fun getNews(keyword: String): List<Article>
 
     fun setUserCountry(country: String)
+
 }
