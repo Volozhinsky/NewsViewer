@@ -40,13 +40,13 @@ class NewsListFragment : Fragment() {
 
         val viewRoot = LayoutInflater.from(requireContext()).inflate(R.layout.fragment_news_list,container,false)
         _binding = DataBindingUtil.bind(viewRoot)
-        _binding?.lifecycleOwner = this
-        _binding?.viewModel = newsListViewModel
          return viewRoot
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.lifecycleOwner = this
+        binding.viewModel = newsListViewModel
         initViews()
         initLiveData()
         newsListViewModel.getNewsList("")
