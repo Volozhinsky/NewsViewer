@@ -1,5 +1,6 @@
 package com.volozhinsky.newsviewer.ui
 
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -38,9 +39,10 @@ class NewsListFragment : Fragment() {
     ): View? {
         newsListViewModel.setUserCountry()
 
-        val viewRoot = LayoutInflater.from(requireContext()).inflate(R.layout.fragment_news_list,container,false)
+        val viewRoot = LayoutInflater.from(requireContext())
+            .inflate(R.layout.fragment_news_list, container, false)
         _binding = DataBindingUtil.bind(viewRoot)
-         return viewRoot
+        return viewRoot
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -52,17 +54,27 @@ class NewsListFragment : Fragment() {
         newsListViewModel.getNewsList("")
     }
 
-    private fun initLiveData(){
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
+
+    private fun initLiveData() {
         newsListViewModel.errorliveData.observe(viewLifecycleOwner) {
             Toast.makeText(requireContext(), getString(it), Toast.LENGTH_SHORT).show()
         }
         newsListViewModel.newsListLiveData.observe(viewLifecycleOwner) {
             recyclerAdapter?.setNewsData(it)
         }
-
+        newsListViewModel.loadingProgressBarLiveData.observe(viewLifecycleOwner) {
+            if (it) {
+                ObjectAnimator.ofFloat(binding.newslistProgressBar, View.SCALE_X, 0f, 1f).start();
+                ObjectAnimator.ofFloat(binding.newslistProgressBar, View.SCALE_Y, 0f, 1f).start();
+            }
+        }
     }
 
-    private fun initViews(){
+    private fun initViews() {
         binding.recyclerView.apply {
             recyclerAdapter = NewsListAdapter(onClicFunc)
             adapter = recyclerAdapter
@@ -74,7 +86,7 @@ class NewsListFragment : Fragment() {
                 )
         }
         binding.editTextKeyword
-            .doOnTextChanged{ p0,_1,_2 ,_3->
+            .doOnTextChanged { p0, _1, _2, _3 ->
                 newsListViewModel.getNewsList(p0.toString())
             }
     }
