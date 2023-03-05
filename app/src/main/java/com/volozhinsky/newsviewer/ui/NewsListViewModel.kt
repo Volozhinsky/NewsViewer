@@ -30,12 +30,15 @@ class NewsListViewModel @Inject constructor(
         _errorliveData.value = R.string.unknownEx
         _loadingProgressBarLiveData.value = false
     }
+    private var _emptyBase = MutableLiveData<Boolean>()
+    val emptyBase get() = _emptyBase
 
     fun getNewsList(keyword: String) {
         viewModelScope.launch(exceptionHandler) {
             _loadingProgressBarLiveData.value = true
             _newsListLiveData.value = repository.getNews(keyword).map { mapper(it) }
             _loadingProgressBarLiveData.value = false
+            _emptyBase.value = newsListLiveData.value?.isEmpty()
         }
     }
 
