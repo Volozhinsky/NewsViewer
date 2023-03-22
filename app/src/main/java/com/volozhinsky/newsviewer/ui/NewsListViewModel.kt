@@ -5,20 +5,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.volozhinsky.newsviewer.R
-import com.volozhinsky.newsviewer.domain.NewsRepository
+import com.volozhinsky.domain.NewsRepository
 import com.volozhinsky.newsviewer.ui.mappers.ArticleUIMapper
 import com.volozhinsky.newsviewer.ui.models.ArticleUI
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@HiltViewModel
+
 class NewsListViewModel @Inject constructor(
-    private val repository: NewsRepository,
+    private val repository: com.volozhinsky.domain.NewsRepository,
     private val mapper: ArticleUIMapper,
 
-) : ViewModel() {
+    ) : ViewModel() {
 
     private var _newsListLiveData = MutableLiveData<List<ArticleUI>>()
     val newsListLiveData get() = _newsListLiveData
