@@ -10,6 +10,8 @@ import com.volozhinsky.data.data.pref.UserDataSource
 import com.volozhinsky.domain.NewsRepository
 import com.volozhinsky.domain.models.Article
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -22,7 +24,7 @@ class NewsRepositoryImpl @Inject constructor(
     private val newsDao: NewsDao
 ) : NewsRepository {
 
-    override suspend fun getNews(keyword: String): List<Article> {
+    override suspend fun getNews(keyword: String)  {
         return withContext(Dispatchers.IO) {
 
             val userCountry = prefs.getUserCountry()
@@ -41,7 +43,7 @@ class NewsRepositoryImpl @Inject constructor(
                         updateNewsDataBase(articleResponses,kw)
                     }
                 }
-                response?.articlesResponse?.map { articleMapper(it) } ?: throw Exception()
+//                response?.articlesResponse?.map { articleMapper(it) } ?: throw Exception()
             }catch (e: Exception) {
                 getNewsFromDataBase(keyword)
             }
@@ -59,8 +61,9 @@ class NewsRepositoryImpl @Inject constructor(
         newsDao.insertAllIntoKeywords(*listKeywords.toTypedArray())
     }
 
-    private fun getNewsFromDataBase(keyword: String): List<com.volozhinsky.domain.models.Article> {
-        return newsDao.getNews(keyword).map {articleEntityMapper.mapToArticle(it) }
+    override fun getNewsFromDataBase(keyword: String): Flow<List<Article>> {
+        return newsDao.getNews(keyword).map {listArticle ->
+            listArticle.map{articleEntityMapper.mapToArticle(it) }}
     }
 
     private fun makeListKeywords(listNews: List<ArticleResponse>, keyword: String): List<KeywordsEntity> {

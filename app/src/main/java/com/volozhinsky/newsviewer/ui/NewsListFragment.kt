@@ -50,7 +50,7 @@ class NewsListFragment : Fragment() {
         binding.viewModel = newsListViewModel
         initViews()
         initLiveData()
-        newsListViewModel.getNewsList("")
+        newsListViewModel.startObserveKeywords()
     }
 
     override fun onDestroy() {

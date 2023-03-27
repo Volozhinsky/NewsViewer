@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NewsDao {
@@ -21,5 +22,5 @@ interface NewsDao {
            "INNER JOIN keywords ON articles.url = keywords.url "+
            "WHERE keywords.keyword = :keyword"
    )
-   fun getNews(keyword: String): List<ArticleEntity>
+   fun getNews(keyword: String): Flow<List<ArticleEntity>>
 }
