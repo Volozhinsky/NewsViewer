@@ -43,14 +43,18 @@ class NewsListViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000L),
         initialValue = ""
     )
+    private
+
 
     fun startLoading(keyword: String) {
-        viewModelScope.launch(exceptionHandler) {
+
             _loadingProgressBarLiveData.value = true
-            repository.getNews(keyword)
+            repository.getNews(keyword).subscribe({
+
+            })
             _loadingProgressBarLiveData.value = false
             _emptyBase.value = newsListLiveData.value?.isEmpty()
-        }
+
     }
 
     fun getNewsList(keyword: String) {
@@ -58,11 +62,10 @@ class NewsListViewModel @Inject constructor(
     }
 
     fun startGettingFromDataBase(keyword: String) {
-        viewModelScope.launch(exceptionHandler) {
-            repository.getNewsFromDataBase(keyword).collect() { listArticle ->
+              repository.getNewsFromDataBase(keyword).subscribe( { listArticle ->
                 _newsListLiveData.value = listArticle.map { mapper(it) }
-            }
-        }
+            })
+
     }
 
     fun startObserveKeywords() {

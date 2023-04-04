@@ -9,11 +9,8 @@ import com.volozhinsky.data.data.network.NewsApiService
 import com.volozhinsky.data.data.pref.UserDataSource
 import com.volozhinsky.domain.NewsRepository
 import com.volozhinsky.domain.models.Article
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import io.reactivex.Completable
+import io.reactivex.Observable
 import javax.inject.Inject
 
 class NewsRepositoryImpl @Inject constructor(
@@ -24,30 +21,26 @@ class NewsRepositoryImpl @Inject constructor(
     private val newsDao: NewsDao
 ) : NewsRepository {
 
-    override suspend fun getNews(keyword: String)  {
-        return withContext(Dispatchers.IO) {
+    override fun getNews(keyword: String): Completable {
 
-            val userCountry = prefs.getUserCountry()
-            val newsListRequest = if (keyword.isBlank()) {
-                newsApiService.getAllNewsList(userCountry)
-            } else {
-                newsApiService.getNewsList(keyword)
-            }
-            try {
-                val response = newsListRequest
-                    .execute()
-                    .body()
-                response?.articlesResponse?.let {articleResponses->
-                    this.launch {
-                        val kw = if (keyword.isBlank()) userCountry else keyword
-                        updateNewsDataBase(articleResponses,kw)
-                    }
-                }
-//                response?.articlesResponse?.map { articleMapper(it) } ?: throw Exception()
-            }catch (e: Exception) {
-                getNewsFromDataBase(keyword)
-            }
+        val userCountry = prefs.getUserCountry()
+        val newsListRequest = if (keyword.isBlank()) {
+            newsApiService.getAllNewsList(userCountry)
+        } else {
+            newsApiService.getNewsList(keyword)
         }
+
+        val response = newsListRequest
+            .execute()
+            .body()
+
+        return response?.flatMapCompletable { mappedResponse ->
+            mappedResponse?.articlesResponse?.let { articleResponses ->
+                val kw = if (keyword.isBlank()) userCountry else keyword
+                updateNewsDataBase(articleResponses, kw)
+                Completable.complete()
+            }
+        } ?: throw Exception()
     }
 
     override fun setUserCountry(country: String) {
@@ -57,18 +50,22 @@ class NewsRepositoryImpl @Inject constructor(
     private fun updateNewsDataBase(listNews: List<ArticleResponse>, keyword: String) {
         val listNewsEntity = listNews.map { articleEntityMapper(it) }
         newsDao.insertAllIntoNews(*listNewsEntity.toTypedArray())
-        val listKeywords = makeListKeywords(listNews,keyword)
+        val listKeywords = makeListKeywords(listNews, keyword)
         newsDao.insertAllIntoKeywords(*listKeywords.toTypedArray())
     }
 
-    override fun getNewsFromDataBase(keyword: String): Flow<List<Article>> {
-        return newsDao.getNews(keyword).map {listArticle ->
-            listArticle.map{articleEntityMapper.mapToArticle(it) }}
+    override fun getNewsFromDataBase(keyword: String): Observable<List<Article>> {
+        return newsDao.getNews(keyword).map { listArticle ->
+            listArticle.map { articleEntityMapper.mapToArticle(it) }
+        }
     }
 
-    private fun makeListKeywords(listNews: List<ArticleResponse>, keyword: String): List<KeywordsEntity> {
+    private fun makeListKeywords(
+        listNews: List<ArticleResponse>,
+        keyword: String
+    ): List<KeywordsEntity> {
         return listNews.map {
-            KeywordsEntity(it.url ?: "",keyword)
+            KeywordsEntity(it.url ?: "", keyword)
         }
     }
 }
