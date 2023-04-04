@@ -7,14 +7,6 @@ import javax.inject.Inject
 
 class ArticleEntityMapper @Inject constructor() {
 
-    operator fun invoke(response: ArticleEntity) = with(response) {
-        ArticleResponse(
-            title = title,
-            urlToImage = urlToImage,
-            url = url
-        )
-    }
-
     operator fun invoke(article: ArticleResponse) = with(article) {
         ArticleEntity(
             title = title,
