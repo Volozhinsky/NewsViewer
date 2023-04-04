@@ -24,7 +24,7 @@ class ArticleEntityMapper @Inject constructor() {
     }
 
     fun mapToArticle(entity: ArticleEntity) = with(entity) {
-        com.volozhinsky.domain.models.Article(
+        Article(
             title = title ?: "",
             urlToImage = urlToImage ?: "",
             url = url

@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class ArticleUIMapper @Inject constructor() {
 
-    operator fun invoke(response: com.volozhinsky.domain.models.Article) = with(response) {
+    operator fun invoke(response: Article) = with(response) {
         ArticleUI(
             title = title,
             urlToImage = urlToImage,

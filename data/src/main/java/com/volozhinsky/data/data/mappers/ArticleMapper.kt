@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class ArticleMapper @Inject constructor() {
     operator fun invoke(response: ArticleResponse) = with(response) {
-        com.volozhinsky.domain.models.Article(
+        Article(
             title = title ?: "",
             urlToImage = urlToImage ?: "",
             url = url ?: ""
